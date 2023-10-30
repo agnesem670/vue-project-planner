@@ -1,11 +1,11 @@
 <template>
-    <div class="project">
+    <div class="project" :class="{ complete: project.complete }">
         <div class="actions">
             <h3 @click="showDetails = !showDetails">{{ project.title }}</h3>
             <div class="icons">
                 <span class="material-symbols-outlined">edit</span>
                 <span @click="deleteProject" class="material-symbols-outlined">delete</span>
-                <span class="material-symbols-outlined">done</span>
+                <span @click="toggleComplete" class="material-symbols-outlined tick">done</span>
             </div>
         </div>
         <div v-if="showDetails" class="details">
@@ -25,9 +25,18 @@ export default {
     },
     methods: {
         deleteProject() {
-            fetch(this.uri, {method: 'DELETE'})
-            .then(()=> this.$emit('delete', this.project.id))
-            .catch(err => console.log(err.message))
+            fetch(this.uri, { method: 'DELETE' })
+                .then(() => this.$emit('delete', this.project.id))
+                .catch(err => console.log(err))
+        },
+        toggleComplete() {
+            fetch(this.uri, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ complete: !this.project.complete })
+            }).then(() => {
+                this.$emit('complete', this.project.id)
+            }).catch((err) => console.log(err))
         }
     }
 }
@@ -53,6 +62,14 @@ h3 {
     align-items: center;
 }
 
+/* .material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 1,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24
+} */
+
 .material-symbols-outlined {
     font-size: 24px;
     margin-left: 10px;
@@ -62,5 +79,14 @@ h3 {
 
 .material-symbols-outlined:hover {
     color: #777
-}</style>
+}
+
+.project.complete {
+    border-left: 4px solid #00ce89;
+}
+
+.project.complete .tick {
+    color:#00ce89
+}
+</style>
 
