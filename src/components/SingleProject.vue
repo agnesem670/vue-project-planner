@@ -1,11 +1,11 @@
 <template>
     <div class="project">
         <div class="actions">
-            <h3 @click="showDetails=!showDetails">{{ project.title }}</h3>
+            <h3 @click="showDetails = !showDetails">{{ project.title }}</h3>
             <div class="icons">
-            <span class="material-symbols-outlined">edit</span>
-            <span class="material-symbols-outlined">delete</span>
-            <span class="material-symbols-outlined">done</span>
+                <span class="material-symbols-outlined">edit</span>
+                <span @click="deleteProject" class="material-symbols-outlined">delete</span>
+                <span class="material-symbols-outlined">done</span>
             </div>
         </div>
         <div v-if="showDetails" class="details">
@@ -17,9 +17,17 @@
 <script>
 export default {
     props: ['project'],
-    data(){
+    data() {
         return {
-            showDetails: false
+            showDetails: false,
+            uri: 'http://localhost:3000/projects/' + this.project.id
+        }
+    },
+    methods: {
+        deleteProject() {
+            fetch(this.uri, {method: 'DELETE'})
+            .then(()=> this.$emit('delete', this.project.id))
+            .catch(err => console.log(err.message))
         }
     }
 }
@@ -31,12 +39,14 @@ export default {
     background: white;
     padding: 10px 20px;
     border-radius: 4px;
-    box-shadow: 1px 2px 3px rgba(0,0,0,0.05);
+    box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.05);
     border-left: 4px solid #e90074;
 }
+
 h3 {
     cursor: pointer;
 }
+
 .actions {
     display: flex;
     justify-content: space-between;
@@ -49,7 +59,8 @@ h3 {
     color: #bbb;
     cursor: pointer;
 }
+
 .material-symbols-outlined:hover {
     color: #777
-}
-</style>
+}</style>
+
